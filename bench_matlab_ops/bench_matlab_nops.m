@@ -10,6 +10,8 @@ function bench_matlab_nops(doDryRun, nIters)
 % things you call from that function
 % * tic/toc works and returns wall time (untrue on some CPUs due to a timer
 % bug)
+% * A couple frames sitting on the function call stack don't affect 
+% performance.
 
 % TODO: See if buffered output matters. Should output be at end?
 
