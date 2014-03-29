@@ -2,16 +2,6 @@ function bench_matlab_nops(doDryRun, nIters)
 %BENCH_MATLAB_NOPS Benchmark basic "no-op" operations
 %
 % bench_matlab_nops(doDryRun, nIters)
-%
-% Assumptions:
-% * Calling stuff from within a local function is as cheap as calling it
-% from a top-level function.
-% * The "end" syntax for function definitions doesn't affect performance of
-% things you call from that function
-% * tic/toc works and returns wall time (untrue on some CPUs due to a timer
-% bug)
-% * A couple frames sitting on the function call stack don't affect 
-% performance.
 
 % TODO: See if buffered output matters. Should output be at end?
 
