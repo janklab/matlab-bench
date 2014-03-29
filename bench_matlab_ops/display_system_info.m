@@ -36,10 +36,24 @@ switch computer
             osDescr = [osDescr ' (WoW64)'];
         end
         memSize = memsize_using_memory_fcn();
-    otherwise
+    case {'GLNXA64'}
         %TODO: Linux support with procfs
+        [~,cpuDescr] = system('grep "model name" /proc/cpuinfo | head -1');
+        cpuDescr = chomp(regexprep(cpuDescr, '.*?: ', ''));
+        [~,memSizeDescr] = system('grep "MemTotal" /proc/meminfo | head -1');
+        [match,tok] = regexp(memSizeDescr, '(\d+) kB', 'match', 'tokens');
+        if ~isempty(match)
+            memK = str2double(tok{1}{1});
+            memSize = sprintf('%.0f', memK / 2^10);
+        else
+            memSize = '???';
+        end
+        [~,kernelVer] = system('uname -v');
+        systemExtra = chomp(kernelVer);
+    otherwise
+        % This shouldn't happen, but just in case...
         cpuDescr = '???';
-        memSize = memsize_using_memory_fcn();
+        memSize = '???';
 end
 
 
