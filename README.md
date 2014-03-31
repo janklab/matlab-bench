@@ -19,7 +19,7 @@ These tools are not intended for use in production code.
 
 ## License
 
-I intend to release this under an Open Source license at some point soon, but I haven't decided which license to use yet. For now, I'm reserving all rights, except those required to be granted by the user agreement for GitHub, where I'm hosting this project.
+This software is released under the MIT License. See LICENSE.txt for details.
 
 ## Quick Start
 
