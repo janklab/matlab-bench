@@ -15,7 +15,7 @@ This is an independent project. It is not affiliated with The MathWorks, creator
 
 The results of these tools are inherently system-dependent. Be careful about extrapolating what you learn from them.
 
-These tools are not intended for use in production code.
+These tools are not intended for use in production code. The code in this project is not suitable for reuse. It does not define any stable or public APIs.
 
 ## License
 

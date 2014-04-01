@@ -3,16 +3,16 @@ function out = list_java_lib_versions()
 %
 % This attempts to detect the versions of the Java libraries bundled with
 % this version of Matlab.
+%
+% Thanks to https://github.com/armhold/Provenance for showing me how to do the Maven
+% Central Repository queries.
+%
+% TODO: Add our own list of known JAR digests to cover those that aren't in Maven.
+%
+% Usage:
+% x = list_java_lib_versions;
+% java_lib_report(x);
 
-% TODO: Get a list of md5sums for known versions of JARs, so we can
-% determine versions of JARs that don't list versions in their manifest
-% by comparing against MD5s of known distributions.
-
-% TODO: Use the Maven "Provenance" tool to look up other JARs.
-% From: https://github.com/armhold/Provenance
-
-% TODO: How to map the JARs to a higher-level library name thing?
-% * Hand-maintain a map of (library, jarfile) relationships?
 
 doOnlyJarExt = true;
 % { sourceName, libNameField, libVersionField; ... }
@@ -22,43 +22,37 @@ sourcePrecedence = {
     'MF-Bundle' 'mfBundleName'  'mfBundleVersion'
     };
 
+
+% Find JARs shipped with Matlab
+
+% Only consider the jars in the Matlab installation itself.
+% Optionally subset to just jarext (third-party jars). Internal MathWorks jars are
+% unidentifiable, and not of interest anyway; we care about libraries we might want
+% to use ourselves, or avoid compatibility problems with.
+
 p = sort(javaclasspath('-static'));
-
-% Subset down to just those in Matlab
-% Optionally subset to jarext (third-party jars)
-
 tf = strncmp(p, matlabroot, numel(matlabroot));
 p = p(tf);
-
 jarExtPath = strrep([matlabroot '/java/jarext'], '/', filesep);
 if doOnlyJarExt
     p = p(strncmp(p, jarExtPath, numel(jarExtPath)));
 end
-
 isJarFile = ~cellfun('isempty', regexp(p, '\.jar$', 'once'));
 jars = p(isJarFile);
 
+% Examine and identify each JAR
 for iJar = 1:numel(jars)
     jarPath = jars{iJar};
     shortName = strrep(jarPath, [matlabroot filesep 'java' filesep], '');
     
-    % Detect files based on hash values
+    % Identify files based on hash values
     hashes = compute_file_hashes(jarPath);
-    %fprintf('%-45s %s  %s\n', shortName, hashes.md5, hashes.sha1);
-    
     mvnInfo = lookup_in_sonatype_repository(hashes.sha1);
-%     if mvnInfo.hasInfo
-%         fprintf('REPO:  %-20s  %-20s  %10s\n', mvnInfo.groupId, mvnInfo.artifactId, mvnInfo.version);
-%     end
     
     % TODO: Check against our own list of known jar file digests
     
     % Get self-declared info from the JAR's manifest
     mfInfo = read_manifest_info(jarPath);
-%     if mfInfo.hasInfo
-%         fprintf('MF: %10s  %-20s  %1s  %-20s\n', mfInfo.implVersion, mfInfo.implName,...
-%             mfInfo.bundleVersion, mfInfo.bundleName);
-%     end
     
     % Assemble combined structure
     s.shortName = shortName;
@@ -76,37 +70,44 @@ for iJar = 1:numel(jars)
     s.mfBundleName = mfInfo.bundleName;
     
     % Merge info from multiple sources
-    s.libName = '';
+    s.thingName = '';
     s.libVersion = '';
     s.infoSource = '';
     for iSource = 1:size(sourcePrecedence,1)
         [sourceName, nameField, versionField] = sourcePrecedence{iSource,:};
         if ~isempty(s.(nameField))
-            s.libName = s.(nameField);
+            s.thingName = s.(nameField);
             s.libVersion = s.(versionField);
             s.infoSource = sourceName;
             break;
         end
     end
+    s.libName = s.thingName;
     
     records(iJar) = s; %#ok
 end
 
 % Convert to a sloppy but readable table
-tbl.data = struct2cell(records(:))';
-tbl.colnames = fieldnames(records);
+records = pullupfields(records, {'fileName','shortName','libName','libVersion','infoSource'});
+tbl = lametable(records);
 
-out = tbl;
+% Condense per-jar results to per-library
+% (This "library" notion is just a collection of JARs from one project, as defined by matlab-bench.)
 
-% TODO: Presentation format
+% This is a hackish implementation of an SQL-style JOIN operation
+libMap = read_map_csv_file('artifact_library_map.csv',3);
+tbl = joinupdate(tbl, {'mvnGroupId','thingName'}, {'libName'}, libMap, {'libName'});
 
-% TODO: Condense per-jar results to per-library
-
+% Structure output as results and details
+tfIDed = ~ strcmp(tbl.data(:,3), '');
+out.identifiedLibs = distinct(project(restrict(tbl, tfIDed), {'libName','libVersion','infoSource'}));
+out.unidentifiedJars = restrict(tbl, ~tfIDed);
+out.details = tbl;
 end
 
 function out = pullupfields(s, fields)
 %PULLUPFIELDS Reorder named fields to front of structure
-out = orderfields(s, [fields setdiff(fieldnames(s), fields, 'stable')]);
+out = orderfields(s, [fields setdiff(fieldnames(s)', fields, 'stable')]);
 end
 
 function out = read_manifest_info(jarFile)
@@ -182,20 +183,4 @@ if artifactNodes.getLength() > 0
 end
 end
 
-function display_attrs(attrs)
-%DISPLAY_ATTRS Display some manifest attributes
-attrsToSkip = {'Manifest-Version', 'Created-By', 'Ant-Version'};
-
-%disp(attrs.keySet());
-it = attrs.keySet().iterator();
-while it.hasNext()
-    key = it.next();
-    if ismember(char(key), attrsToSkip)
-        continue;
-    end
-    val = attrs.getValue(key);
-    fprintf('%s: %s\n', char(key), char(val));
-end
-
-end
 
