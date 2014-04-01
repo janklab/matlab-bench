@@ -7,7 +7,13 @@ function out = list_java_lib_versions()
 % Thanks to https://github.com/armhold/Provenance for showing me how to do the Maven
 % Central Repository queries.
 %
+% It's been surprisingly hard to identify a lot of the JARs, even if they look like
+% open source projects which are widely published. Perhaps Matlab is using versions
+% that are old enough to not be in the Maven Central Repository.
+%
 % TODO: Add our own list of known JAR digests to cover those that aren't in Maven.
+% TODO: Convince projects to publish older artifacts to Maven, for diagnostic
+% purposes like this.
 %
 % Usage:
 % x = list_java_lib_versions;
@@ -103,6 +109,9 @@ tfIDed = ~ strcmp(tbl.data(:,3), '');
 out.identifiedLibs = distinct(project(restrict(tbl, tfIDed), {'libName','libVersion','infoSource'}));
 out.unidentifiedJars = restrict(tbl, ~tfIDed);
 out.details = tbl;
+out.meta.timestamp = now;
+out.meta.computer = computer;
+out.meta.version = version;
 end
 
 function out = pullupfields(s, fields)
