@@ -24,6 +24,7 @@ doOnlyJarExt = true;
 % { sourceName, libNameField, libVersionField; ... }
 sourcePrecedence = {
     'Maven'     'mvnArtifactId' 'mvnVersion'
+    'Custom'    'customName'    'customVersion'
     'MF-Impl'   'mfImplName'    'mfImplVersion'
     'MF-Bundle' 'mfBundleName'  'mfBundleVersion'
     };
@@ -46,6 +47,8 @@ end
 isJarFile = ~cellfun('isempty', regexp(p, '\.jar$', 'once'));
 jars = p(isJarFile);
 
+customDigestMap = read_map_csv_file('custom_digest_map.csv', 7);
+
 % Examine and identify each JAR
 for iJar = 1:numel(jars)
     jarPath = jars{iJar};
@@ -55,7 +58,8 @@ for iJar = 1:numel(jars)
     hashes = compute_file_hashes(jarPath);
     mvnInfo = lookup_in_sonatype_repository(hashes.sha1);
     
-    % TODO: Check against our own list of known jar file digests
+    % Check against our own list of known jar file digests
+    customInfo = lookup_in_our_custom_map(hashes, customDigestMap);
     
     % Get self-declared info from the JAR's manifest
     mfInfo = read_manifest_info(jarPath);
@@ -70,6 +74,8 @@ for iJar = 1:numel(jars)
     s.mvnGroupId = mvnInfo.groupId;
     s.mvnArtifactId = mvnInfo.artifactId;
     s.mvnVersion = mvnInfo.version;
+    s.customName = customInfo.libName;
+    s.customVersion = customInfo.version;
     s.mfImplVersion = mfInfo.implVersion;
     s.mfImplName = mfInfo.implName;
     s.mfBundleVersion = mfInfo.bundleVersion;
@@ -106,7 +112,7 @@ tbl = joinupdate(tbl, {'mvnGroupId','thingName'}, {'libName'}, libMap, {'libName
 
 % Structure output as results and details
 tfIDed = ~ strcmp(tbl.data(:,3), '');
-out.identifiedLibs = distinct(project(restrict(tbl, tfIDed), {'libName','libVersion','infoSource'}));
+out.identifiedLibs = distinct(project(restrict(tbl, tfIDed), {'libName','libVersion','infoSource','mvnGroupId'}));
 out.unidentifiedJars = restrict(tbl, ~tfIDed);
 out.details = tbl;
 out.meta.timestamp = now;
@@ -149,6 +155,27 @@ fclose(fid);
 
 out.md5 = compute_hash(data, 'MD5');
 out.sha1 = compute_hash(data, 'SHA1');
+end
+
+function out = lookup_in_our_custom_map(hashes, customDigestMap)
+
+out.libName = '';
+out.version = '';
+
+ixRow = 0;
+ixCol = customDigestMap.colindexes({'md5','sha1','thingName','thingVersion'});
+[tf,loc] = ismember(hashes.md5, customDigestMap.data(:,ixCol(1)));
+if tf
+    ixRow = loc;
+end
+[tf,loc] = ismember(hashes.sha1, customDigestMap.data(:,ixCol(2)));
+if tf
+    ixRow = loc;
+end
+if ixRow ~= 0
+    out.libName = customDigestMap.data{ixRow,ixCol(3)};
+    out.version = customDigestMap.data{ixRow,ixCol(4)};
+end
 end
 
 function out = compute_hash(data, algorithm)

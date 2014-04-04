@@ -96,6 +96,13 @@ classdef lametable
         out = project(obj, [obj.colnames setdiff(obj.colnames, fields, 'stable')]);
         end
         
+        function out = colindexes(obj, colNames)
+        %COLINDEXES Get indexes of named columns
+        %
+        % Returns 0 to indicate column is not present.
+        colNames = cellstr(colNames);
+        [tf,out] = ismember(colNames, obj.colnames);
+        end
     end
 end
 

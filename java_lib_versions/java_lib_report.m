@@ -15,11 +15,11 @@ p('matlab-bench java_lib_versions report');
 p('Matlab %s on %s, run at %s', x.meta.version, x.meta.computer, datestr(x.meta.timestamp));
 p('');
 p('Identified Libraries:');
-fmt = '%-30s %-10s   %-15s';
-p(fmt, 'Lib', 'Version', 'InfoSource');
+fmt = '%-30s %-10s   %-15s     %-20s';
+p(fmt, 'Lib', 'Version', 'InfoSource', 'MavenGroupId');
 pheaderlines(fmt, '=');
 for i = 1:size(identified, 1)
-    p(fmt, identified{i,[1 2 3]});
+    p(fmt, identified{i,[1 2 3 4]});
 end
 p('');
 
