@@ -264,6 +264,11 @@ end
 te = toc(t0);
 show_result(name, nIters, te, isDryRun);
 
+name = 'isempty(persistent)';
+t0 = tic;
+call_isempty_on_persistent(nIters);
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
 
 name = 'struct s.foo field access';
 s = struct;
@@ -274,11 +279,84 @@ for i = 1:nIters
 end
 te = toc(t0);
 show_result(name, nIters, te, isDryRun);
-clear s
 
-name = 'isempty(persistent)';
+name = 'struct s.foo.bar field access';
+s = struct;
+s.foo = struct();
+s.foo.bar = [];
 t0 = tic;
-call_isempty_on_persistent(nIters);
+for i = 1:nIters
+    s.foo.bar;
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+
+name = 'struct() init';
+t0 = tic;
+for i = 1:nIters
+    s = struct('a', 1, 'b', 2, 'c', 3, 'd', 4);
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+
+name = 'struct.field init';
+t0 = tic;
+for i = 1:nIters
+    s = struct;
+    s.a = 1;
+    s.b = 2;
+    s.c = 3;
+    s.d = 4;
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+
+name = 'arg multi in / out x 4';
+t0 = tic;
+for i = 1:nIters
+    [w, x, y, z] = arg_multi(1, 2, 3, 4);
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+
+name = 'arg vararg x 4';
+t0 = tic;
+for i = 1:nIters
+    [w, x, y, z] = arg_vararg(1, 2, 3, 4);
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+
+name = 'arg struct';
+s = struct();
+s.a = 1;
+s.b = 2;
+s.c = 3;
+s.d = 4;
+t0 = tic;
+for i = 1:nIters
+    [su] = arg_struct(s);
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+
+name = 'arg struct mod';
+s = struct();
+s.foo = 0;
+t0 = tic;
+for i = 1:nIters
+    [su] = arg_struct_mod(s);
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+
+name = 'arg struct mod ref';
+s = struct();
+s.foo = 0;
+t0 = tic;
+for i = 1:nIters
+    arg_struct_mod_ref(s);
+end
 te = toc(t0);
 show_result(name, nIters, te, isDryRun);
 
@@ -323,4 +401,28 @@ end
 
 function nop_subfunction()
 %NOP_SUBFUNCTION Subfunction (local function) that does nothing
+end
+
+function [w, x, y, z] = arg_multi(a, b, c, d)
+w = a;
+x = b;
+y = c;
+z = d;
+end
+
+function [varargout] = arg_vararg(varargin)
+varargout = varargin;
+end
+
+function [out] = arg_struct(in)
+out = in;
+end
+
+function [s] = arg_struct_mod(s)
+s.foo = s.foo + 1;
+end
+
+function [] = arg_struct_mod_ref(ref)
+% May be super slow
+ref.h.foo = 1;
 end
