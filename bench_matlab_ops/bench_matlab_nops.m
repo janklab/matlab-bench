@@ -8,7 +8,7 @@ function bench_matlab_nops(doDryRun, nIters, useJava)
 
 if nargin < 1 || isempty(doDryRun);  doDryRun = true;  end
 if nargin < 2 || isempty(nIters);    nIters = 100000;  end
-if nargin < 3 || isempty(useJava);   useJava = false;  end
+if nargin < 3 || isempty(useJava);   useJava = true;  end
 
 if useJava
     myJavaClassDir = fullfile(fileparts(mfilename('fullpath')), 'dummyjava.jar');
@@ -113,7 +113,7 @@ end
 te = toc(t0);
 show_result(name, nIters, te, isDryRun);
 
-name = 'classdef pivate_nop(obj)';
+name = 'classdef private_nop(obj)';
 t0 = tic;
 obj.call_private_nop(nIters);
 te = toc(t0);
