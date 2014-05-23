@@ -280,9 +280,9 @@ function show_results_header(isDryRun)
 if isDryRun
     return;
 end
-% Align 'µsec...' with 1s place instead of field beginning; looks better.
-%fprintf('%-30s  %-6s   %-6s \n', 'Operation', 'Total', '  Per Call (µsec)');
-fprintf('%-30s   %-12s \n', 'Operation', 'Time (µsec)');
+% Align 'msec...' with 1s place instead of field beginning; looks better.
+%fprintf('%-30s  %-6s   %-6s \n', 'Operation', 'Total', '  Per Call (msec)');
+fprintf('%-30s   %-12s \n', 'Operation', 'Time (msec)');
 end
 
 function call_isempty_on_persistent(nIters)
@@ -315,4 +315,3 @@ end
 function nop_subfunction()
 %NOP_SUBFUNCTION Subfunction (local function) that does nothing
 end
-
