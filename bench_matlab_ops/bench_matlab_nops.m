@@ -466,10 +466,10 @@ out = in;
 end
 
 function [s] = arg_struct_mod(s)
-s.foo = s.foo + 1;
+s.foo = 2;
 end
 
 function [] = arg_struct_mod_ref(ref)
 % May be super slow
-ref.h.foo = 1;
+ref.h.foo = 2;
 end
