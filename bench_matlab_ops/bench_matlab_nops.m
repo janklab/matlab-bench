@@ -319,6 +319,14 @@ end
 te = toc(t0);
 show_result(name, nIters, te, isDryRun);
 
+name = 'arg multi in / out x 8';
+t0 = tic;
+for i = 1:nIters
+    [a, b, c, d, w, x, y, z] = arg_multi_8(1, 2, 3, 4, 5, 6, 7, 8);
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+
 name = 'arg vararg x 4';
 t0 = tic;
 for i = 1:nIters
@@ -327,7 +335,34 @@ end
 te = toc(t0);
 show_result(name, nIters, te, isDryRun);
 
-name = 'arg struct';
+name = 'arg vararg x 8';
+t0 = tic;
+for i = 1:nIters
+    [a, b, c, d, w, x, y, z] = arg_vararg(1, 2, 3, 4, 5, 6, 7, 8);
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+
+name = 'arg vararg cell x 4';
+t0 = tic;
+args = {1, 2, 3, 4};
+for i = 1:nIters
+    [w, x, y, z] = arg_vararg(args{:});
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+
+name = 'arg struct x 1';
+s = struct();
+s.foo = [];
+t0 = tic;
+for i = 1:nIters
+    [su] = arg_struct(s);
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+
+name = 'arg struct x 4';
 s = struct();
 s.a = 1;
 s.b = 2;
@@ -408,6 +443,18 @@ w = a;
 x = b;
 y = c;
 z = d;
+end
+
+function [o1, o2, o3, o4, o5, o6, o7, o8] = ...
+    arg_multi_8(i1, i2, i3, i4, i5, i6, i7, i8)
+o1 = i1;
+o2 = i2;
+o3 = i3;
+o4 = i4;
+o5 = i5;
+o6 = i6;
+o7 = i7;
+o8 = i8;
 end
 
 function [varargout] = arg_vararg(varargin)
