@@ -1,4 +1,4 @@
-function bench_matlab_nops(doDryRun, nIters)
+function bench_matlab_nops(doDryRun, nIters, useJava)
 %BENCH_MATLAB_NOPS Benchmark basic "no-op" operations
 %
 % bench_matlab_nops(doDryRun, nIters)
@@ -8,8 +8,11 @@ function bench_matlab_nops(doDryRun, nIters)
 
 if nargin < 1 || isempty(doDryRun);  doDryRun = true;  end
 if nargin < 2 || isempty(nIters);    nIters = 100000;  end
+if nargin < 3 || isempty(useJava);   useJava = false;  end
 
-myJavaClassDir = fileparts(mfilename('fullpath'));
+if useJava
+    myJavaClassDir = fullfile(fileparts(mfilename('fullpath')), 'dummyjava.jar');
+end
 
 fprintf('\n');
 display_system_info();
@@ -26,22 +29,26 @@ fprintf('nIters = %d %s\n\n', nIters, runNotes);
 % HACK: Get our Java classes on the path
 % Be sloppy and skip the try/catch or onCleanup() just in case that affects
 % our timings
-javaaddpath(myJavaClassDir);
+if useJava
+    javaaddpath(myJavaClassDir);
+end
 
 % Warm-up pass
 if doDryRun
-    bench_nops_pass(10000, 1);
+    bench_nops_pass(10000, 1, useJava);
 end
 
 % Benchmarking pass
-bench_nops_pass(nIters, 0);
+bench_nops_pass(nIters, 0, useJava);
 
 % Cleanup
-javarmpath(myJavaClassDir);
+if useJava
+    javarmpath(myJavaClassDir);
+end
 
 end
 
-function bench_nops_pass(nIters, isDryRun)
+function bench_nops_pass(nIters, isDryRun, useJava)
 
 show_results_header(isDryRun);
 
@@ -192,51 +199,53 @@ clear fcnName;
 show_result(name, nIters, te, isDryRun);
 
 % Java tests
-jObj = net.apjanke.matlab_bench.bench_nops.DummyJavaClass;
-
-name = 'Java obj.nop()';
-t0 = tic;
-for i = 1:nIters
-    jObj.nop();
+if useJava
+    jObj = net.apjanke.matlab_bench.bench_nops.DummyJavaClass;
+    
+    name = 'Java obj.nop()';
+    t0 = tic;
+    for i = 1:nIters
+        jObj.nop();
+    end
+    te = toc(t0);
+    show_result(name, nIters, te, isDryRun);
+    
+    name = 'Java nop(obj)';
+    t0 = tic;
+    for i = 1:nIters
+        nop(jObj);
+    end
+    te = toc(t0);
+    show_result(name, nIters, te, isDryRun);
+    
+    name = 'Java feval(''nop'',obj)';
+    fcnName = 'nop';
+    t0 = tic;
+    for i = 1:nIters
+        feval(fcnName, jObj);
+    end
+    te = toc(t0);
+    clear fcnName;
+    show_result(name, nIters, te, isDryRun);
+    
+    
+    name = 'Java Klass.staticNop()';
+    t0 = tic;
+    for i = 1:nIters
+        net.apjanke.matlab_bench.bench_nops.DummyJavaClass.staticNop();
+    end
+    te = toc(t0);
+    show_result(name, nIters, te, isDryRun);
+    
+    name = 'Java obj.nop() from Java';
+    t0 = tic;
+    jObj.callNop(nIters);
+    te = toc(t0);
+    show_result(name, nIters, te, isDryRun);
+    
+    % End Java tests
+    clear jObj;
 end
-te = toc(t0);
-show_result(name, nIters, te, isDryRun);
-
-name = 'Java nop(obj)';
-t0 = tic;
-for i = 1:nIters
-    nop(jObj);
-end
-te = toc(t0);
-show_result(name, nIters, te, isDryRun);
-
-name = 'Java feval(''nop'',obj)';
-fcnName = 'nop';
-t0 = tic;
-for i = 1:nIters
-    feval(fcnName, jObj);
-end
-te = toc(t0);
-clear fcnName;
-show_result(name, nIters, te, isDryRun);
-
-
-name = 'Java Klass.staticNop()';
-t0 = tic;
-for i = 1:nIters
-    net.apjanke.matlab_bench.bench_nops.DummyJavaClass.staticNop();
-end
-te = toc(t0);
-show_result(name, nIters, te, isDryRun);
-
-name = 'Java obj.nop() from Java';
-t0 = tic;
-jObj.callNop(nIters);
-te = toc(t0);
-show_result(name, nIters, te, isDryRun);
-
-% End Java tests
-clear jObj;
 
 name = 'MEX mexnop()';
 t0 = tic;
