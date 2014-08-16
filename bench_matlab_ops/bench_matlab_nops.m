@@ -267,9 +267,20 @@ te = toc(t0);
 show_result(name, nIters, te, isDryRun);
 clear s
 
-name = 'struct s.foo() function';
+name = 'struct s.foo() anon function';
 s = struct;
 s.foo = @()[];
+t0 = tic;
+for i = 1:nIters
+    s.foo();
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+clear s
+
+name = 'struct s.foo() function handle';
+s = struct;
+s.foo = @nop;
 t0 = tic;
 for i = 1:nIters
     s.foo();
@@ -283,7 +294,6 @@ t0 = tic;
 call_isempty_on_persistent(nIters);
 te = toc(t0);
 show_result(name, nIters, te, isDryRun);
-
 
 end
 
@@ -326,4 +336,3 @@ end
 function nop_subfunction()
 %NOP_SUBFUNCTION Subfunction (local function) that does nothing
 end
-
