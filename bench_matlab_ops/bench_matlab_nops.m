@@ -267,6 +267,17 @@ te = toc(t0);
 show_result(name, nIters, te, isDryRun);
 clear s
 
+name = 'struct s.foo() function';
+s = struct;
+s.foo = @()[];
+t0 = tic;
+for i = 1:nIters
+    s.foo();
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+clear s
+
 name = 'isempty(persistent)';
 t0 = tic;
 call_isempty_on_persistent(nIters);
