@@ -11,6 +11,8 @@ if nargin < 2 || isempty(nIters);    nIters = 100000;  end
 
 myJavaClassDir = fileparts(mfilename('fullpath'));
 
+myDotNetDir = [fileparts(mfilename('fullpath')) '/dotNet/bench_nops_dotNet/build/'];
+
 fprintf('\n');
 display_system_info();
 runNotes = '';
@@ -28,6 +30,12 @@ fprintf('nIters = %d %s\n\n', nIters, runNotes);
 % our timings
 javaaddpath(myJavaClassDir);
 
+
+% Load .net assemblies
+NET.addAssembly([myDotNetDir '/bench_nops_netFw45.dll']);
+% NET.addAssembly([myDotNetDir '/netcoreapp2.1/bench_nops_netCore.dll']); % does not load
+NET.addAssembly([myDotNetDir '/netstandard2.0/bench_nops_netStandard.dll']);
+
 % Warm-up pass
 if doDryRun
     bench_nops_pass(10000, 1);
@@ -38,6 +46,8 @@ bench_nops_pass(nIters, 0);
 
 % Cleanup
 javarmpath(myJavaClassDir);
+
+% .NET dlls can't be unloaded, if needed please restart Matlab.
 
 end
 
@@ -191,7 +201,104 @@ te = toc(t0);
 clear fcnName;
 show_result(name, nIters, te, isDryRun);
 
-% Java tests
+%% .Net tests
+% Net 4.5
+netObj45 = bench_nops_netFw45.DummyNetClass;
+
+name = 'Net 4.5 obj.nop()';
+t0 = tic;
+for i = 1:nIters
+    netObj45.nop();
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+
+name = 'Net 4.5  nop(obj)';
+t0 = tic;
+for i = 1:nIters
+    nop(netObj45);
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+
+name = 'Net 4.5  feval(''nop'',obj)';
+fcnName = 'nop';
+t0 = tic;
+for i = 1:nIters
+    feval(fcnName, netObj45);
+end
+te = toc(t0);
+clear fcnName;
+show_result(name, nIters, te, isDryRun);
+
+
+name = 'Net 4.5  Klass.staticNop()';
+t0 = tic;
+for i = 1:nIters
+    bench_nops_netFw45.DummyNetClass.staticNop();
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+
+name = 'Net 4.5 obj.nop() from .NET';
+t0 = tic;
+netObj45.callNop(nIters);
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+
+% End .NET  45 tests
+clear netObj45;
+
+% Net standard 2.0
+netObjStd2 = bench_nops_netStandard.DummyNetClass;
+
+name = 'Net std 2.0 obj.nop()';
+t0 = tic;
+for i = 1:nIters
+    netObjStd2.nop();
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+
+name = 'Net std 2.0 nop(obj)';
+t0 = tic;
+for i = 1:nIters
+    nop(netObjStd2);
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+
+name = 'Net std 2.0 feval(''nop'',obj)';
+fcnName = 'nop';
+t0 = tic;
+for i = 1:nIters
+    feval(fcnName, netObjStd2);
+end
+te = toc(t0);
+clear fcnName;
+show_result(name, nIters, te, isDryRun);
+
+
+name = 'Net std 2.0 Klass.staticNop()';
+t0 = tic;
+for i = 1:nIters
+    bench_nops_netStandard.DummyNetClass.staticNop();
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+
+name = 'Net std 2.0 obj.nop() from .NET';
+t0 = tic;
+netObjStd2.callNop(nIters);
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+
+% End .NET tests
+clear netObjStd;
+
+
+
+%% Java tests
 jObj = net.apjanke.matlab_bench.bench_nops.DummyJavaClass;
 
 name = 'Java obj.nop()';
