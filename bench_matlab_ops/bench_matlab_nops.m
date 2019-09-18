@@ -207,7 +207,7 @@ if ispc
     % .NET 4.5
     netObj45 = bench_nops_netFw45.DummyNetClass;
 
-    name = 'Net 4.5 obj.nop()';
+    name = '.NET 4.5 obj.nop()';
     t0 = tic;
     for i = 1:nIters
         netObj45.nop();
@@ -215,7 +215,7 @@ if ispc
     te = toc(t0);
     show_result(name, nIters, te, isDryRun);
 
-    name = 'Net 4.5  nop(obj)';
+    name = '.NET 4.5 nop(obj)';
     t0 = tic;
     for i = 1:nIters
         nop(netObj45);
@@ -223,7 +223,7 @@ if ispc
     te = toc(t0);
     show_result(name, nIters, te, isDryRun);
 
-    name = 'Net 4.5  feval(''nop'',obj)';
+    name = '.NET 4.5 feval(''nop'',obj)';
     fcnName = 'nop';
     t0 = tic;
     for i = 1:nIters
@@ -233,7 +233,7 @@ if ispc
     clear fcnName;
     show_result(name, nIters, te, isDryRun);
 
-    name = 'Net 4.5  Klass.staticNop()';
+    name = '.NET 4.5 Klass.staticNop()';
     t0 = tic;
     for i = 1:nIters
         bench_nops_netFw45.DummyNetClass.staticNop();
@@ -241,7 +241,7 @@ if ispc
     te = toc(t0);
     show_result(name, nIters, te, isDryRun);
 
-    name = 'Net 4.5 obj.nop() from .NET';
+    name = '.NET 4.5 obj.nop() from .NET';
     t0 = tic;
     netObj45.callNop(nIters);
     te = toc(t0);
@@ -253,7 +253,7 @@ if ispc
     % .NET standard 2.0
     netObjStd2 = bench_nops_netStandard.DummyNetClass;
 
-    name = 'Net std 2.0 obj.nop()';
+    name = '.NET std 2.0 obj.nop()';
     t0 = tic;
     for i = 1:nIters
         netObjStd2.nop();
@@ -261,7 +261,7 @@ if ispc
     te = toc(t0);
     show_result(name, nIters, te, isDryRun);
 
-    name = 'Net std 2.0 nop(obj)';
+    name = '.NET std 2.0 nop(obj)';
     t0 = tic;
     for i = 1:nIters
         nop(netObjStd2);
@@ -269,7 +269,7 @@ if ispc
     te = toc(t0);
     show_result(name, nIters, te, isDryRun);
 
-    name = 'Net std 2.0 feval(''nop'',obj)';
+    name = '.NET std 2.0 feval(''nop'',obj)';
     fcnName = 'nop';
     t0 = tic;
     for i = 1:nIters
@@ -279,7 +279,7 @@ if ispc
     clear fcnName;
     show_result(name, nIters, te, isDryRun);
 
-    name = 'Net std 2.0 Klass.staticNop()';
+    name = '.NET std 2.0 Klass.staticNop()';
     t0 = tic;
     for i = 1:nIters
         bench_nops_netStandard.DummyNetClass.staticNop();
@@ -287,7 +287,7 @@ if ispc
     te = toc(t0);
     show_result(name, nIters, te, isDryRun);
 
-    name = 'Net std 2.0 obj.nop() from .NET';
+    name = '.NET std 2.0 obj.nop() from .NET';
     t0 = tic;
     netObjStd2.callNop(nIters);
     te = toc(t0);
