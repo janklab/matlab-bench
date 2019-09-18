@@ -250,7 +250,7 @@ if ispc
     % End .NET 4.5 tests
     clear netObj45;
 
-    % .NET standard 2.0
+    % .NET Standard 2.0
     netObjStd2 = bench_nops_netStandard.DummyNetClass;
 
     name = '.NET std 2.0 obj.nop()';
