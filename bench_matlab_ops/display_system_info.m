@@ -66,8 +66,13 @@ if isdeployed
     miscStr = [miscStr ' DEPLOYED'];
 end
 %fprintf('Arch: %-8s  Release: %-s  %s\n', computer, ['R' version('-release')], miscStr);
-fprintf('Matlab %s on %s %s \n', ['R' version('-release')], computer, miscStr);
-fprintf('Matlab %s / Java %s on %s %s (%s) \n', version, javaVersion,...
+if is_octave
+  appName = 'Octave';
+else
+  appName = 'Matlab';
+end
+fprintf('%s %s on %s %s \n', appName, ['R' version('-release')], computer, miscStr);
+fprintf('%s %s / Java %s on %s %s (%s) \n', appName, version, javaVersion,...
     computer, osDescr, hostname);
 if ~isempty(systemExtra)
     systemExtra = sprintf('(%s)', systemExtra);

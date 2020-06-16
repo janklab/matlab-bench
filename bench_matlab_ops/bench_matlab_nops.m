@@ -52,15 +52,6 @@ javarmpath(myJavaClassDir);
 
 end
 
-function out = is_octave
-persistent val
-if isempty(val)
-    v = ver;
-    val = ismember('Octave', {v.Name});
-end
-out = val;
-end
-
 function bench_nops_pass(nIters, isDryRun)
 
 show_results_header(isDryRun);
