@@ -3,10 +3,11 @@ function display_system_info
 
 % TODO: Detect when running in VM host
 
-javaProps = java.lang.System.getProperties();
+javaProps = javaMethod('getProperties', 'java.lang.System');
 javaVersion = char(javaProps.get('java.version'));
 
-hostname = char(java.net.InetAddress.getLocalHost().getHostName());
+localhostAddress = javaMethod('getLocalHost', 'java.net.InetAddress');
+hostname = char(localhostAddress.getHostName());
 hostname = regexprep(hostname, '\..*', '');
 osDescr = [char(javaProps.get('os.name')) ' ' char(javaProps.get('os.version'))];
 systemExtra = '';

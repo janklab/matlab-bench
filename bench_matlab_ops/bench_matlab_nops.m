@@ -52,6 +52,15 @@ javarmpath(myJavaClassDir);
 
 end
 
+function out = is_octave
+persistent val
+if isempty(val)
+    v = ver;
+    val = ismember('Octave', {v.Name});
+end
+out = val;
+end
+
 function bench_nops_pass(nIters, isDryRun)
 
 show_results_header(isDryRun);
@@ -299,60 +308,69 @@ end
 
 
 %% Java tests
-jObj = net.apjanke.matlab_bench.bench_nops.DummyJavaClass;
+try
+    jObj = javaObject('net.apjanke.matlab_bench.bench_nops.DummyJavaClass');
 
-name = 'Java obj.nop()';
-t0 = tic;
-for i = 1:nIters
-    jObj.nop();
+    name = 'Java obj.nop()';
+    t0 = tic;
+    for i = 1:nIters
+        jObj.nop();
+    end
+    te = toc(t0);
+    show_result(name, nIters, te, isDryRun);
+
+    name = 'Java nop(obj)';
+    t0 = tic;
+    for i = 1:nIters
+        nop(jObj);
+    end
+    te = toc(t0);
+    show_result(name, nIters, te, isDryRun);
+
+    name = 'Java feval(''nop'',obj)';
+    fcnName = 'nop';
+    t0 = tic;
+    for i = 1:nIters
+        feval(fcnName, jObj);
+    end
+    te = toc(t0);
+    clear fcnName;
+    show_result(name, nIters, te, isDryRun);
+
+    if ~is_octave
+        name = 'Java Klass.staticNop()';
+        t0 = tic;
+        for i = 1:nIters
+            net.apjanke.matlab_bench.bench_nops.DummyJavaClass.staticNop();
+        end
+        te = toc(t0);
+        show_result(name, nIters, te, isDryRun);
+    end
+
+    name = 'Java obj.nop() from Java';
+    t0 = tic;
+    jObj.callNop(nIters);
+    te = toc(t0);
+    show_result(name, nIters, te, isDryRun);
+
+catch err
+    fprintf('Java tests errored: %s. Skipping.\n', err.message);
 end
-te = toc(t0);
-show_result(name, nIters, te, isDryRun);
-
-name = 'Java nop(obj)';
-t0 = tic;
-for i = 1:nIters
-    nop(jObj);
-end
-te = toc(t0);
-show_result(name, nIters, te, isDryRun);
-
-name = 'Java feval(''nop'',obj)';
-fcnName = 'nop';
-t0 = tic;
-for i = 1:nIters
-    feval(fcnName, jObj);
-end
-te = toc(t0);
-clear fcnName;
-show_result(name, nIters, te, isDryRun);
-
-
-name = 'Java Klass.staticNop()';
-t0 = tic;
-for i = 1:nIters
-    net.apjanke.matlab_bench.bench_nops.DummyJavaClass.staticNop();
-end
-te = toc(t0);
-show_result(name, nIters, te, isDryRun);
-
-name = 'Java obj.nop() from Java';
-t0 = tic;
-jObj.callNop(nIters);
-te = toc(t0);
-show_result(name, nIters, te, isDryRun);
 
 % End Java tests
 clear jObj;
 
-name = 'MEX mexnop()';
-t0 = tic;
-for i = 1:nIters
-    mexnop();
+try
+    name = 'MEX mexnop()';
+    t0 = tic;
+    for i = 1:nIters
+        mexnop();
+    end
+    te = toc(t0);
+    show_result(name, nIters, te, isDryRun);
+catch err
+    fprintf('MEX tests errored: %s. Skipping.\n', err.message);
 end
-te = toc(t0);
-show_result(name, nIters, te, isDryRun);
-
 
 name = 'builtin j()';
 t0 = tic;
@@ -387,9 +405,9 @@ function show_results_header(isDryRun)
 if isDryRun
     return;
 end
-% Align 'µsec...' with 1s place instead of field beginning; looks better.
-%fprintf('%-30s  %-6s   %-6s \n', 'Operation', 'Total', '  Per Call (µsec)');
-fprintf('%-30s   %-12s \n', 'Operation', 'Time (µsec)');
+% Align 'ï¿½sec...' with 1s place instead of field beginning; looks better.
+%fprintf('%-30s  %-6s   %-6s \n', 'Operation', 'Total', '  Per Call (ï¿½sec)');
+fprintf('%-30s   %-12s \n', 'Operation', 'Time (ï¿½sec)');
 end
 
 function call_isempty_on_persistent(nIters)
