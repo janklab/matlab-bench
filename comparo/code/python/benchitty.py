@@ -48,7 +48,8 @@ class Bench:
   def bench_and_write_results(self):
     # Run it twice to make sure the caches are warmed up
     self._bench_and_write_results_impl()
-    self._bench_and_write_results_impl()
+    out_file, lang_ver = self._bench_and_write_results_impl()
+    print(f'Python {lang_ver}: wrote results to: {out_file}')
 
   def _bench_and_write_results_impl(self):
     cpu_id = self.cpu_id()
@@ -69,7 +70,7 @@ class Bench:
     pathlib.Path(cpu_dir).mkdir(parents=True, exist_ok=True)
     with open(out_file, 'w') as f:
       json.dump(rslts, f)
-    print(f'Python {lang_ver}: wrote results to: {out_file}')
+    return (out_file, lang_ver)
 
   def bench_method(self, rslts):
     o = SomeClass()
