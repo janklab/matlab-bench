@@ -1,4 +1,4 @@
 import benchitty
 
-b = benchitty.Bench()
+b = benchitty.BenchyPoo()
 b.bench_and_write_results()

@@ -8,11 +8,11 @@ import time
 
 
 def tic():
-  """Current time in float microseconds"""
-  return time.time_ns() / 1000
+  """Current time in float nanoseconds"""
+  return time.time_ns()
 
 def toc(t0):
-  """Elapsed time in float microseconds"""
+  """Elapsed time in float nanoseconds"""
   t1 = tic()
   return t1 - t0
 
@@ -30,7 +30,7 @@ def _platform_name():
   return out
 
 
-class Bench:
+class BenchyPoo:
   def __init__(self):
     self.out_dir = "../results"
     self.out_file = os.path.join(self.out_dir, )
@@ -63,13 +63,14 @@ class Bench:
     self.bench_method_inh3(rslts)
     self.bench_prop(rslts)
     self.bench_prop_inh3(rslts)
+    self.bench_prop_write(rslts)
     report = {
-      'meta': {'lang': 'Some Python'},
+      'meta': {'lang': 'Python', 'version': lang_ver},
       'results': rslts
     }
     pathlib.Path(cpu_dir).mkdir(parents=True, exist_ok=True)
     with open(out_file, 'w') as f:
-      json.dump(rslts, f)
+      json.dump(report, f)
     return (out_file, lang_ver)
 
   def bench_method(self, rslts):
@@ -78,8 +79,8 @@ class Bench:
     for i in range(self.n_iters):
       o.foo()
     te = toc(t0)
-    usec_per_iter = te / self.n_iters
-    rslts['method'] = usec_per_iter
+    nsec_per_iter = te / self.n_iters
+    rslts['method'] = nsec_per_iter
 
   def bench_method_inh3(self, rslts):
     o = SomeSubclass3()
@@ -87,8 +88,8 @@ class Bench:
     for i in range(self.n_iters):
       o.foo()
     te = toc(t0)
-    usec_per_iter = te / self.n_iters
-    rslts['method_inh_3'] = usec_per_iter
+    nsec_per_iter = te / self.n_iters
+    rslts['method_inh_3'] = nsec_per_iter
 
   def bench_prop(self, rslts):
     o = SomeClass()
@@ -96,8 +97,8 @@ class Bench:
     for i in range(self.n_iters):
       dummy = o.x
     te = toc(t0)
-    usec_per_iter = te / self.n_iters
-    rslts['prop'] = usec_per_iter
+    nsec_per_iter = te / self.n_iters
+    rslts['prop'] = nsec_per_iter
 
   def bench_prop_inh3(self, rslts):
     o = SomeClass()
@@ -105,8 +106,8 @@ class Bench:
     for i in range(self.n_iters):
       dummy = o.x
     te = toc(t0)
-    usec_per_iter = te / self.n_iters
-    rslts['prop_inh3'] = usec_per_iter
+    nsec_per_iter = te / self.n_iters
+    rslts['prop_inh3'] = nsec_per_iter
 
   def bench_prop_write(self, rslts):
     o = SomeClass()
@@ -114,8 +115,8 @@ class Bench:
     for i in range(self.n_iters):
       o.x = i
     te = toc(t0)
-    usec_per_iter = te / self.n_iters
-    rslts['prop_write'] = usec_per_iter
+    nsec_per_iter = te / self.n_iters
+    rslts['prop_write'] = nsec_per_iter
 
 class SomeClass:
   def __init__(self):

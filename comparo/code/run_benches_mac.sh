@@ -23,4 +23,15 @@ export BENCHMAT_CPU_ID="$cpu_make $cpu_model"
 echo "Running Python benchmark..."
 PYTHONPATH="./python" python3 python/run_benchmark.py
 
+echo "Running Matlab benchmarks..."
+for mver in 2019b 2020a 2020b; do
+  app_dir="/Applications/MATLAB_R${mver}.app"
+  if [[ -e $app_dir ]]; then
+    echo "Running Matlab R${mver} benchmark..."
+    matlab_exe="$app_dir/bin/matlab"
+    bench_cmd="addpath('matlab'); run_benchmark; exit"
+    $matlab_exe -nodisplay -nosplash -batch "$bench_cmd"
+  fi
+done
+
 echo "All benchmarks done."
