@@ -34,4 +34,11 @@ for mver in 2019b 2020a 2020b; do
   fi
 done
 
+echo "Running Java benchmark..."
+CP="java/target/classes"
+for jar in java/target/lib/*.jar; do
+  CP="$CP:$jar"
+done
+java -cp "$CP" buh.BenchyPoo
+
 echo "All benchmarks done."

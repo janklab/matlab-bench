@@ -101,7 +101,7 @@ class BenchyPoo:
     rslts['prop'] = nsec_per_iter
 
   def bench_prop_inh3(self, rslts):
-    o = SomeClass()
+    o = SomeSubclass3()
     t0 = tic()
     for i in range(self.n_iters):
       dummy = o.x
