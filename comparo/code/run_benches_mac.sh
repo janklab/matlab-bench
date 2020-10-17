@@ -41,4 +41,7 @@ for jar in java/target/lib/*.jar; do
 done
 java -cp "$CP" buh.BenchyPoo
 
+echo "Running C++ benchmark..."
+cxx/cxx
+
 echo "All benchmarks done."

@@ -33,7 +33,6 @@ def _platform_name():
 class BenchyPoo:
   def __init__(self):
     self.out_dir = "../results"
-    self.out_file = os.path.join(self.out_dir, )
     self.n_iters = 100000
   
   def cpu_id(self):
@@ -89,7 +88,7 @@ class BenchyPoo:
       o.foo()
     te = toc(t0)
     nsec_per_iter = te / self.n_iters
-    rslts['method_inh_3'] = nsec_per_iter
+    rslts['method_inh3'] = nsec_per_iter
 
   def bench_prop(self, rslts):
     o = SomeClass()
