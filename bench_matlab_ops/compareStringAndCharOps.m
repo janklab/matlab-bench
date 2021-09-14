@@ -26,7 +26,7 @@ end
 if isnan(nIters)
     nIters = 10000;
 end
-allTestGroups = ["convert" "extract" "regexp"];
+allTestGroups = ["convert" "extract" "regexp" "equality"];
 if isempty(groupsToRun)
     groupsToRun = allTestGroups;
 end
@@ -175,7 +175,6 @@ if ismember("extract", groupsToRun)
     
 end
 
-
 % Some regexps
 
 if ismember("regexp", groupsToRun)
@@ -236,6 +235,62 @@ if ismember("regexp", groupsToRun)
     
 end
 
+% Equality tests
+
+    function [chr, str, cstrs, strs] = makeEqtestStrs(nStrs, strLen)
+        [chr,str] = makeRandomString(strLen);
+        chr2 = chr;
+        chr2(end) = char(chr2(end) + 1);
+        str2 = string(chr2);
+        % This is cheating because the repmatted arrays might share
+        % underlying data
+        strs = repmat(str2, [1 nStrs]);
+        cstrs = cellstr(strs);
+    end
+
+if ismember("equality", groupsToRun)
+    
+    strLens = [1 100 1000];
+    nStrss = [1 10 1000];
+    
+    for strLen = strLens
+        for nStrs = nStrss
+            name = sprintf('strcmp, no match (end diff), nstrs=%d, strlen=%d', nStrs, strLen);
+            [chr, str, cstrs, strs] = makeEqtestStrs(nStrs, strLen);
+            t0 = tic;
+            for i = 1:nIters
+                strcmp(chr, cstrs);
+            end
+            teChar = toc(t0);
+            t0 = tic;
+            for i = 1:nIters
+                strcmp(str, strs);
+            end
+            teStr = toc(t0);
+            rsltsBuf = [rsltsBuf; {name, teChar, teStr}];
+        end
+    end    
+    
+    for strLen = strLens
+        for nStrs = nStrss
+            name = sprintf('strcmp vs ==, no match (end diff), nstrs=%d, strlen=%d', nStrs, strLen);
+            [chr, str, cstrs, strs] = makeEqtestStrs(nStrs, strLen);
+            t0 = tic;
+            for i = 1:nIters
+                foo = strcmp(chr, cstrs);
+            end
+            teChar = toc(t0);
+            t0 = tic;
+            for i = 1:nIters
+                foo = str == strs;
+            end
+            teStr = toc(t0);
+            rsltsBuf = [rsltsBuf; {name, teChar, teStr}];
+        end
+    end    
+    
+end
+
 % Results
 
 rslts = cell2table(rsltsBuf, 'VariableNames', {'Name', 'CharTime', 'StringTime'});
@@ -257,6 +312,7 @@ if nargout == 0
     rslts.StringNsec = int64(round(rslts.StringNsec));
     rslts.StringWin = round(rslts.StringWin, 2);
     
+    fprintf('\n');
     fprintf('String vs. char benchmark:\n');
     fprintf('\n');
     fprintf('Matlab R%s on %s\n', out.MatlabRelease, computer);
@@ -265,6 +321,8 @@ if nargout == 0
         out.SystemInfo.SystemExtra);
     fprintf('\n');
     disp(rslts);
+    fprintf('\n');
+    
     clear out
 end
 
