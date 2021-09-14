@@ -29,8 +29,9 @@ bench_matlab_nops
 
 ## Tools
 
-* bench_matlab_ops – Benchmarks the overhead of function calls and basic OO operations
-* java_lib_versions – Detects the versions of Java libraries that Matlab ships with (work in progress)
+* `bench_matlab_ops` – Benchmarks the overhead of function calls and basic OO operations.
+* `bench_matlab_ops/compareStringAndCharOps` – Compare speed of equivalent operations on char and string arrays.
+* `java_lib_versions` – Detects the versions of Java libraries that Matlab ships with (work in progress).
 
 ## Author
 
