@@ -1,4 +1,4 @@
-function display_system_info
+function out = display_system_info
 %DISPLAY_SYSTEM_INFO Display info about system this is running on
 
 % TODO: Detect when running in VM host
@@ -12,16 +12,17 @@ hostname = regexprep(hostname, '\..*', '');
 osDescr = [char(javaProps.get('os.name')) ' ' char(javaProps.get('os.version'))];
 systemExtra = '';
 
+out = struct;
+
 switch computer
     case {'MACI64'}
         cpuModel = sysctl_prop('machdep.cpu.brand_string');
         nCpuCores = str2double(sysctl_prop('machdep.cpu.core_count'));
         %cpuCacheSize = str2double(sysctl_prop('hw.l3cachesize')) / (2^20);
-        memSize = sprintf('%.0f', str2double(sysctl_prop('hw.memsize')) / (2^30));
-        cpuDescr = cpuModel;
+        memSizeGB = str2double(sysctl_prop('hw.memsize')) / 2^30;
+        cpuDescr = sprintf('%s, %d cores', cpuModel, nCpuCores);
     case {'PCWIN','PCWIN64'}
         cpuDescr = strrep(getenv('PROCESSOR_IDENTIFIER'), ', GenuineIntel', '');
-        sysName = '';
         try
             cpuVendorId = winqueryreg('HKEY_LOCAL_MACHINE',...
                 'HARDWARE\DESCRIPTION\System\CentralProcessor\0', 'ProcessorNameString');
@@ -36,7 +37,7 @@ switch computer
         if ~isempty(w64Arch)
             osDescr = [osDescr ' (WoW64)'];
         end
-        memSize = memsize_using_memory_fcn();
+        memSizeGB = memsize_using_memory_fcn();
     case {'GLNXA64'}
         %TODO: Linux support with procfs
         [~,cpuDescr] = system('grep "model name" /proc/cpuinfo | head -1');
@@ -45,16 +46,16 @@ switch computer
         [match,tok] = regexp(memSizeDescr, '(\d+) kB', 'match', 'tokens');
         if ~isempty(match)
             memK = str2double(tok{1}{1});
-            memSize = sprintf('%.0f', memK / 2^10);
+            memSizeGB = memK / 2^10;
         else
-            memSize = '???';
+            memSizeGB = NaN;
         end
         [~,kernelVer] = system('uname -v');
         systemExtra = chomp(kernelVer);
     otherwise
         % This shouldn't happen, but just in case...
         cpuDescr = '???';
-        memSize = '???';
+        memSizeGB = NaN;
 end
 
 
@@ -71,13 +72,20 @@ if is_octave
 else
   appName = 'Matlab';
 end
-fprintf('%s %s on %s %s \n', appName, ['R' version('-release')], computer, miscStr);
-fprintf('%s %s / Java %s on %s %s (%s) \n', appName, version, javaVersion,...
-    computer, osDescr, hostname);
-if ~isempty(systemExtra)
-    systemExtra = sprintf('(%s)', systemExtra);
+out.OsDescr = osDescr;
+out.CpuDescr = cpuDescr;
+out.MemSizeGB = memSizeGB;
+out.SystemExtra = systemExtra;
+if nargout == 0
+    fprintf('%s %s on %s %s \n', appName, ['R' version('-release')], computer, miscStr);
+    fprintf('%s %s / Java %s on %s %s (%s) \n', appName, version, javaVersion,...
+        computer, osDescr, hostname);
+    if ~isempty(systemExtra)
+        systemExtra = sprintf('(%s)', systemExtra);
+    end
+    fprintf('Machine: %s, %d GB RAM %s\n', cpuDescr, memSizeGB, systemExtra);
+    clear out
 end
-fprintf('Machine: %s, %s GB RAM %s\n', cpuDescr, memSize, systemExtra);
 
 end
 
@@ -86,8 +94,8 @@ function out = memsize_using_memory_fcn()
 %
 % Only works on platforms that support memory(). OS X does not.
 % Returns number of gigabytes as string.
-[ma,mb] = memory();
-out = sprintf('%.0f', mb.PhysicalMemory.Total / 2^30);
+[~,mb] = memory();
+out = mb.PhysicalMemory.Total / 2^30;
 end
 
 function out = chomp(str)
