@@ -57,7 +57,7 @@ if ismember("convert", groupsToRun)
     
     % Construct a string
     
-    for strLen = [1 100 1000 10000 100000]
+    for strLen = [1 1000 100000]
         name = sprintf('Construct from char, n=%d', strLen);
         [chr,str] = makeRandomString(strLen);
         t0 = tic;
@@ -76,7 +76,7 @@ if ismember("convert", groupsToRun)
     
     % Extract one string as char
     
-    for strLen = [1 100 1000 10000 100000]
+    for strLen = [1 1000 100000]
         name = sprintf('Convert scalar string as char for (s{1}), n=%d', strLen);
         [chr,str] = makeRandomString(strLen);
         t0 = tic;
@@ -92,7 +92,7 @@ if ismember("convert", groupsToRun)
         rsltsBuf = [rsltsBuf; {name, teChar, teStr}];
     end
     
-    for strLen = [1 100 1000 10000 100000]
+    for strLen = [1 1000 100000]
         name = sprintf('Convert scalar string as char for (char(s)), n=%d', strLen);
         [chr,str] = makeRandomString(strLen);
         t0 = tic;
