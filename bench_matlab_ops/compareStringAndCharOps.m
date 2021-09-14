@@ -57,7 +57,7 @@ if ismember("convert", groupsToRun)
     
     % Construct a string
     
-    for strLen = [100 1000 10000 100000]
+    for strLen = [1 100 1000 10000 100000]
         name = sprintf('Construct from char, n=%d', strLen);
         [chr,str] = makeRandomString(strLen);
         t0 = tic;
@@ -74,10 +74,9 @@ if ismember("convert", groupsToRun)
         rsltsBuf = [rsltsBuf; {name, teChar, teStr}];
     end
     
-    
     % Extract one string as char
     
-    for strLen = [100 1000 10000 100000]
+    for strLen = [1 100 1000 10000 100000]
         name = sprintf('Convert scalar string as char for (s{1}), n=%d', strLen);
         [chr,str] = makeRandomString(strLen);
         t0 = tic;
@@ -93,7 +92,7 @@ if ismember("convert", groupsToRun)
         rsltsBuf = [rsltsBuf; {name, teChar, teStr}];
     end
     
-    for strLen = [100 1000 10000 100000]
+    for strLen = [1 100 1000 10000 100000]
         name = sprintf('Convert scalar string as char for (char(s)), n=%d', strLen);
         [chr,str] = makeRandomString(strLen);
         t0 = tic;
@@ -108,6 +107,42 @@ if ismember("convert", groupsToRun)
         teStr = toc(t0);
         rsltsBuf = [rsltsBuf; {name, teChar, teStr}];
     end
+    
+    % Implicit conversion to char
+    
+    for strLen = [1 100 1000 10000 100000]
+        name = sprintf('Impl conv to from variable scalar char, n=%d', strLen);
+        [chr,str] = makeRandomString(strLen);
+        charOneChar = 'x';
+        t0 = tic;        
+        for i = 1:nIters
+            chr(1) = charOneChar;
+        end
+        teChar = toc(t0);
+        strOneChar = "x";
+        t0 = tic;
+        for i = 1:nIters
+            chr(1) = strOneChar;
+        end
+        teStr = toc(t0);
+        rsltsBuf = [rsltsBuf; {name, teChar, teStr}];
+    end
+    
+    for strLen = [1 100 1000 10000 100000]
+        name = sprintf('Impl conv from literal to scalar char, n=%d', strLen);
+        [chr,str] = makeRandomString(strLen);
+        t0 = tic;
+        for i = 1:nIters
+            chr(1) = 'x';
+        end
+        teChar = toc(t0);
+        t0 = tic;
+        for i = 1:nIters
+            chr(1) = "x";
+        end
+        teStr = toc(t0);
+        rsltsBuf = [rsltsBuf; {name, teChar, teStr}];
+    end    
     
 end
 
