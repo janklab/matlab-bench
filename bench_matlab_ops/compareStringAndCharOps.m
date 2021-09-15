@@ -26,7 +26,7 @@ end
 if isnan(nIters)
     nIters = 10000;
 end
-allTestGroups = ["convert" "extract" "regexp" "equality"];
+allTestGroups = ["convert" "extract" "regexp" "equality" "strops"];
 if isempty(groupsToRun)
     groupsToRun = allTestGroups;
 end
@@ -41,14 +41,29 @@ end
 
 % Localized randstream with fixed seed for reproducible runs
 myRand = RandStream('mt19937ar', 'Seed', 420.69);
+% Arbitrary cutoff for alphabet to use
+codePointLimit = hex2dec('A7FF');
 
 % { Name, CharTime, StringTime; ... }
 rsltsBuf = {
     };
 
     function [out,outStr] = makeRandomString(nChars)
-        out = char(myRand.randi([33 127], 1, nChars));
+        out = char(myRand.randi([33 codePointLimit], 1, nChars));
         outStr = string(out);
+    end
+
+    function [out,outStrs] = makeRandomStrings(nStrings, nChars)
+        outStrs = repmat(string(missing), [1 nStrings]);
+        outStrs(1) = makeRandomString(nChars);
+        blah = char(outStrs(1));
+        mychar = blah(1);
+        for iStr = 2:nStrings
+            mychar = char(max(mod(double(mychar) + 1, codePointLimit), 33));
+            blah(end) = mychar;
+            outStrs(iStr) = blah;
+        end
+        out = cellstr(outStrs);
     end
 
 % Tests
@@ -325,6 +340,55 @@ if ismember("equality", groupsToRun)
     end    
     
 end
+
+if ismember("strops", groupsToRun)
+    
+    % strjoin and split
+    
+    nStrss = [1 1000]; % Keep this small bc the char version is *slow*
+    strLen = 42;
+    
+    for nStrs = nStrss
+        name = sprintf('strjoin, nstrs=%d, len=%d', nStrs, strLen);
+        [cstrs,strs] = makeRandomStrings(nStrs, strLen);
+        t0 = tic;
+        for i = 1:nIters
+            foo = strjoin(cstrs, ' ');
+        end
+        teChar = toc(t0);
+        strOneChar = "x";
+        t0 = tic;
+        for i = 1:nIters
+            foo = strjoin(strs, " ");
+        end
+        teStr = toc(t0);
+        rsltsBuf = [rsltsBuf; {name, teChar, teStr}];
+    end
+    
+    strLens = [1 10 1000];
+    nPartss = [1 10 1000];
+    for strLen = strLens
+        for nParts = nPartss
+            name = sprintf('strsplit, nparts=%d, len=%d', nStrs, strLen);
+            [cParts,strParts] = makeRandomStrings(nParts, strLen);
+            str = strjoin(strParts, ',');
+            cstr = char(str);
+            t0 = tic;
+            for i = 1:nIters
+                foo = strsplit(cstr, ',');
+            end
+            teChar = toc(t0);
+            t0 = tic;
+            for i = 1:nIters
+                foo = strsplit(str, ",");
+            end
+            teStr = toc(t0);
+            rsltsBuf = [rsltsBuf; {name, teChar, teStr}];
+        end
+    end
+end
+
+
 
 % Results
 
