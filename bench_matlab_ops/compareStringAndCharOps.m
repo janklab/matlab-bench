@@ -60,7 +60,7 @@ if ismember("convert", groupsToRun)
     strLens = [1 1000 100000];
     
     for strLen = strLens
-        name = sprintf('Construct from char, n=%d', strLen);
+        name = sprintf('Construct from char, len=%d', strLen);
         [chr,str] = makeRandomString(strLen);
         t0 = tic;
         for i = 1:nIters
@@ -79,7 +79,7 @@ if ismember("convert", groupsToRun)
     % Extract one string as char
     
     for strLen = strLens
-        name = sprintf('Convert scalar string as char for (s{1}), n=%d', strLen);
+        name = sprintf('Convert scalar string as char (s{1}), len=%d', strLen);
         [chr,str] = makeRandomString(strLen);
         t0 = tic;
         for i = 1:nIters
@@ -95,7 +95,7 @@ if ismember("convert", groupsToRun)
     end
     
     for strLen = strLens
-        name = sprintf('Convert scalar string as char for (char(s)), n=%d', strLen);
+        name = sprintf('Convert scalar string as char (char(s)), len=%d', strLen);
         [chr,str] = makeRandomString(strLen);
         t0 = tic;
         for i = 1:nIters
@@ -110,11 +110,28 @@ if ismember("convert", groupsToRun)
         rsltsBuf = [rsltsBuf; {name, teChar, teStr}];
     end
     
+    for strLen = strLens
+        name = sprintf('charvec from scalar cellstr/string (s{1}), len=%d', strLen);
+        [chr,str] = makeRandomString(strLen);
+        cstr = cellstr(str);
+        t0 = tic;
+        for i = 1:nIters
+            foo = cstr{1};
+        end
+        teChar = toc(t0);
+        t0 = tic;
+        for i = 1:nIters
+            foo = str{1};
+        end
+        teStr = toc(t0);
+        rsltsBuf = [rsltsBuf; {name, teChar, teStr}];
+    end
+    
     % Implicit conversion to char
     
     strLens = [1 100 1000 10000 100000];
     for strLen = strLens
-        name = sprintf('Impl conv to from variable scalar char, n=%d', strLen);
+        name = sprintf('Impl conv to from variable scalar char, len=%d', strLen);
         [chr,str] = makeRandomString(strLen);
         charOneChar = 'x';
         t0 = tic;        
@@ -132,7 +149,7 @@ if ismember("convert", groupsToRun)
     end
     
     for strLen = strLens
-        name = sprintf('Impl conv from literal to scalar char, n=%d', strLen);
+        name = sprintf('Impl conv from literal to scalar char, len=%d', strLen);
         [chr,str] = makeRandomString(strLen);
         t0 = tic;
         for i = 1:nIters
@@ -154,7 +171,7 @@ if ismember("extract", groupsToRun)
     % Extract text
     
     for strLen = [100 1000]
-        name = sprintf('Extract scattered ixed substr (c(ix) vs extract), n=%d', strLen);
+        name = sprintf('Extract scattered ixed substr (c(ix) vs extract), len=%d', strLen);
         [chr,str] = makeRandomString(strLen);
         ix = myRand.randi(strLen, 1, floor(strLen/10));
         t0 = tic;
