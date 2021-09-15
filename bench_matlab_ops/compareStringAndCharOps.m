@@ -386,6 +386,59 @@ if ismember("strops", groupsToRun)
             rsltsBuf = [rsltsBuf; {name, teChar, teStr}];
         end
     end
+    
+    % erase
+    strLens = [1 10 1000];
+    nPartss = [1 10 1000];
+    for strLen = strLens
+        for nParts = nPartss
+            name = sprintf('erase, nparts=%d, len=%d', nStrs, strLen);
+            [cParts,strParts] = makeRandomStrings(nParts, strLen);
+            joiner = 'foobar';
+            joinerStr = string(joiner);
+            str = strjoin(strParts, joiner);
+            cstr = char(str);
+            t0 = tic;
+            for i = 1:nIters
+                foo = erase(cstr, joiner);
+            end
+            teChar = toc(t0);
+            t0 = tic;
+            for i = 1:nIters
+                foo = erase(str, joinerStr);
+            end
+            teStr = toc(t0);
+            rsltsBuf = [rsltsBuf; {name, teChar, teStr}];
+        end
+    end    
+    
+    % strrep
+    strLens = [1 10];
+    nPartss = [1 10 1000];
+    for strLen = strLens
+        for nParts = nPartss
+            name = sprintf('strrep, nparts=%d, len=%d', nStrs, strLen);
+            [cParts,strParts] = makeRandomStrings(nParts, strLen);
+            joiner = 'foobar';
+            replacement = 'whatever';
+            joinerStr = string(joiner);
+            replacementStr = string(replacement);
+            str = strjoin(strParts, joiner);
+            cstr = char(str);
+            t0 = tic;
+            for i = 1:nIters
+                foo = strrep(cstr, joiner, replacement);
+            end
+            teChar = toc(t0);
+            t0 = tic;
+            for i = 1:nIters
+                foo = strrep(str, joinerStr, replacementStr);
+            end
+            teStr = toc(t0);
+            rsltsBuf = [rsltsBuf; {name, teChar, teStr}];
+        end
+    end
+    
 end
 
 
