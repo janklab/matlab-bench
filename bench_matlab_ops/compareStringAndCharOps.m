@@ -286,7 +286,7 @@ if ismember("equality", groupsToRun)
             teStr = toc(t0);
             rsltsBuf = [rsltsBuf; {name, teChar, teStr}];
         end
-    end    
+    end
     
     for strLen = strLens
         for nStrs = nStrss
@@ -300,6 +300,24 @@ if ismember("equality", groupsToRun)
             t0 = tic;
             for i = 1:nIters
                 foo = str == strs;
+            end
+            teStr = toc(t0);
+            rsltsBuf = [rsltsBuf; {name, teChar, teStr}];
+        end
+    end    
+    
+    for strLen = strLens
+        for nStrs = nStrss
+            name = sprintf('ismember, no match (end diff), nstrs=%d, strlen=%d', nStrs, strLen);
+            [chr, str, cstrs, strs] = makeEqtestStrs(nStrs, strLen);
+            t0 = tic;
+            for i = 1:nIters
+                foo = ismember(chr, cstrs);
+            end
+            teChar = toc(t0);
+            t0 = tic;
+            for i = 1:nIters
+                foo = ismember(str, strs);
             end
             teStr = toc(t0);
             rsltsBuf = [rsltsBuf; {name, teChar, teStr}];
