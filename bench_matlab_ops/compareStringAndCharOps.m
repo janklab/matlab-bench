@@ -369,7 +369,7 @@ if ismember("strops", groupsToRun)
     nPartss = [1 10 1000];
     for strLen = strLens
         for nParts = nPartss
-            name = sprintf('strsplit, nparts=%d, len=%d', nStrs, strLen);
+            name = sprintf('strsplit, nparts=%d, len=%d', nParts, strLen);
             [cParts,strParts] = makeRandomStrings(nParts, strLen);
             str = strjoin(strParts, ',');
             cstr = char(str);
@@ -392,7 +392,7 @@ if ismember("strops", groupsToRun)
     nPartss = [1 10 1000];
     for strLen = strLens
         for nParts = nPartss
-            name = sprintf('erase, nparts=%d, len=%d', nStrs, strLen);
+            name = sprintf('erase, nparts=%d, len=%d', nParts, strLen);
             [cParts,strParts] = makeRandomStrings(nParts, strLen);
             joiner = 'foobar';
             joinerStr = string(joiner);
@@ -417,7 +417,7 @@ if ismember("strops", groupsToRun)
     nPartss = [1 10 1000];
     for strLen = strLens
         for nParts = nPartss
-            name = sprintf('strrep, nparts=%d, len=%d', nStrs, strLen);
+            name = sprintf('strrep, noccurs=%d, len=%d', nParts, strLen);
             [cParts,strParts] = makeRandomStrings(nParts, strLen);
             joiner = 'foobar';
             replacement = 'whatever';
@@ -439,6 +439,34 @@ if ismember("strops", groupsToRun)
         end
     end
     
+    % regexprep
+    strLens = [1 10];
+    nPartss = [1 10 1000];
+    for strLen = strLens
+        for nParts = nPartss
+            name = sprintf('regexprep, noccurs=%d, len=%d', nParts, strLen);
+            [cParts,strParts] = makeRandomStrings(nParts, strLen);
+            joiner = 'foobar';
+            pattern = 'f.*?r';
+            replacement = 'whatever';
+            joinerStr = string(joiner);
+            replacementStr = string(replacement);
+            str = strjoin(strParts, joiner);
+            cstr = char(str);
+            t0 = tic;
+            for i = 1:nIters
+                foo = regexprep(cstr, joiner, replacement);
+            end
+            teChar = toc(t0);
+            t0 = tic;
+            for i = 1:nIters
+                foo = regexprep(str, joinerStr, replacementStr);
+            end
+            teStr = toc(t0);
+            rsltsBuf = [rsltsBuf; {name, teChar, teStr}];
+        end
+    end
+        
 end
 
 
