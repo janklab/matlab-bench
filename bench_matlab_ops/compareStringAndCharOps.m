@@ -415,7 +415,7 @@ if nargout == 0
     fprintf('String vs. char benchmark:\n');
     fprintf('\n');
     fprintf('Matlab R%s on %s\n', out.MatlabRelease, computer);
-    fprintf('OS: %s\n', out.SystemInfo.OsDescr);
+    fprintf('%s\n', out.SystemInfo.OsDescr);
     fprintf('%s, %d GB RAM %s\n', out.SystemInfo.CpuDescr, out.SystemInfo.MemSizeGB, ...
         out.SystemInfo.SystemExtra);
     fprintf('\n');
