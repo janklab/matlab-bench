@@ -24,6 +24,8 @@ arguments
     groupsToRun string = []
 end
 if isnan(nIters)
+    % Need about 10,000 iters to get times long enough to pick up the fastest
+    % operations.
     nIters = 10000;
 end
 allTestGroups = ["convert" "extract" "regexp" "equality" "strops"];
