@@ -5,6 +5,7 @@ function bench_matlab_nops(doDryRun, nIters)
 
 % TODO: See if buffered output matters. Should output be at end?
 
+%#ok<*FVAL>
 
 if nargin < 1 || isempty(doDryRun);  doDryRun = true;  end
 if nargin < 2 || isempty(nIters);    nIters = 100000;  end
@@ -396,9 +397,9 @@ function show_results_header(isDryRun)
 if isDryRun
     return;
 end
-% Align '�sec...' with 1s place instead of field beginning; looks better.
-%fprintf('%-30s  %-6s   %-6s \n', 'Operation', 'Total', '  Per Call (�sec)');
-fprintf('%-30s   %-12s \n', 'Operation', 'Time (�sec)');
+% Align 'μsec...' with 1s place instead of field beginning; looks better.
+%fprintf('%-30s  %-6s   %-6s \n', 'Operation', 'Total', '  Per Call (μsec)');
+fprintf('%-30s   %-12s \n', 'Operation', 'Time (μsec)');
 end
 
 function call_isempty_on_persistent(nIters)
