@@ -384,6 +384,50 @@ te = toc(t0);
 show_result(name, nIters, te, isDryRun);
 clear s
 
+name = 'obj.foo = 42 (unvalidated)';
+obj = DummyClassWithValidators;
+x = 42;
+t0 = tic;
+for i = 1:nIters
+    obj.aWhatever = x;
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+clear obj x
+
+name = 'obj.foo = 42 (double)';
+obj = DummyClassWithValidators;
+x = 42;
+t0 = tic;
+for i = 1:nIters
+    obj.aDouble = x;
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+clear obj x
+
+name = 'obj.foo = 42 ((1,1) double)';
+obj = DummyClassWithValidators;
+x = 42;
+t0 = tic;
+for i = 1:nIters
+    obj.aScalarDouble = x;
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+clear obj x
+
+name = 'obj.foo = 42 ({must...})';
+obj = DummyClassWithValidators;
+x = 42;
+t0 = tic;
+for i = 1:nIters
+    obj.aFcnValidator = x;
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+clear obj x
+
 name = 'isempty(persistent)';
 t0 = tic;
 call_isempty_on_persistent(nIters);
