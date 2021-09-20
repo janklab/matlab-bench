@@ -492,6 +492,12 @@ if ismember("strops", groupsToRun)
             bar = double(intStrs);
         end
         teStr = toc(t0);
+        % t0 = tic;
+        % for i = 1:nIters
+        %     bar = double(string(intCellstrs));
+        % end
+        % teStrCellstr = toc(t0);
+        % fprintf('%4d nums: str2double = %f  double(str) = %f  double(string(cellstr)) = %f\n', nNums, teChar, teStr, teStrCellstr);
         rsltsBuf = [rsltsBuf; {name, teChar, teStr}];
     end
     for nNums = nNumss
