@@ -17,6 +17,7 @@ M-doc/
 .idea
 ~*
 *.m~
+*.asv
 /.factorypath
 .classpath
 /.ijwb/

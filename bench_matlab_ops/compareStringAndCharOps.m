@@ -19,6 +19,8 @@ function out = compareStringAndCharOps(nIters, groupsToRun)
 % * For really small operations, garbage collection of temporary values is
 % probably significantly influencing results.
 
+%#ok<*ASGLU>
+
 arguments
     nIters (1,1) double = NaN
     groupsToRun string = []
@@ -467,6 +469,48 @@ if ismember("strops", groupsToRun)
             teStr = toc(t0);
             rsltsBuf = [rsltsBuf; {name, teChar, teStr}];
         end
+    end
+    
+    % Numeric conversion
+    %nNumss = [1 100 1000];
+    % Parsing 1,000 numbers with str2double is just insufferably slow. Be
+    % smaller.
+    nNumss = [1 100 200];
+    for nNums = nNumss
+        name = sprintf('str2double/double(str) (ints), nNums=%d', nNums);
+        someInts = randi([-10000, 10000], [1, nNums]);
+        intStrs = string(someInts);
+        intCellstrs = cellstr(intStrs);
+        
+        t0 = tic;
+        for i = 1:nIters
+            foo = str2double(intCellstrs);
+        end
+        teChar = toc(t0);
+        t0 = tic;
+        for i = 1:nIters
+            bar = double(intStrs);
+        end
+        teStr = toc(t0);
+        rsltsBuf = [rsltsBuf; {name, teChar, teStr}];
+    end
+    for nNums = nNumss
+        name = sprintf('str2double/double(str) (reals), nNums=%d', nNums);
+        someReals = 1000 * (0.5 - rand([1 nNums]));
+        realStrs = string(someReals);
+        realCellstrs = cellstr(realStrs);
+        
+        t0 = tic;
+        for i = 1:nIters
+            foo = str2double(realCellstrs);
+        end
+        teChar = toc(t0);
+        t0 = tic;
+        for i = 1:nIters
+            bar = double(realStrs);
+        end
+        teStr = toc(t0);
+        rsltsBuf = [rsltsBuf; {name, teChar, teStr}];
     end
         
 end
