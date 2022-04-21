@@ -23,7 +23,7 @@ All the code can be run from within Matlab.
 To benchmark the overhead of function and method calls:
 
 ```matlab
-cd bench_matlab_ops
+addpath Mcode
 bench_matlab_nops
 ```
 
@@ -32,7 +32,7 @@ bench_matlab_nops
 * `bench_matlab_nops` – Benchmarks the overhead of function calls and basic OO operations.
 * `compareStringAndCharOps` – Compare speed of equivalent operations on char and string arrays.
 
-(All found in the `bench_matlab_ops/` folder.)
+(All found in the `Mcode/` folder.)
 
 ## Author
 
