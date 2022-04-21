@@ -443,6 +443,7 @@ call_isempty_on_persistent(nIters);
 te = toc(t0);
 show_result(name, nIters, te, isDryRun);
 
+fprintf('\n');
 
 end
 
