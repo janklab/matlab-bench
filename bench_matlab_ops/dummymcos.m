@@ -1,7 +1,8 @@
 classdef dummymcos
     %DUMMYMCOS A dummy new-style (MCOS) class
     
-    
+    %#ok<*MANU>
+
     properties
         foo = [];
         propWithGetter = [];
