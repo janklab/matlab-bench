@@ -1,13 +1,13 @@
-function bench_matlab_nops(doDryRun, nIters)
+function bench_matlab_nops(doWarmupRun, nIters)
 %BENCH_MATLAB_NOPS Benchmark basic "no-op" operations
 %
-% bench_matlab_nops(doDryRun, nIters)
+% bench_matlab_nops(doWarmupRun, nIters)
 
 % TODO: See if buffered output matters. Should output be at end?
 
 %#ok<*FVAL>
 
-if nargin < 1 || isempty(doDryRun);  doDryRun = true;  end
+if nargin < 1 || isempty(doWarmupRun);  doWarmupRun = true;  end
 if nargin < 2 || isempty(nIters);    nIters = 100000;  end
 
 myJavaClassDir = fileparts(mfilename('fullpath'));
@@ -17,7 +17,7 @@ myDotNetDir = [fileparts(mfilename('fullpath')) '/dotNet/bench_nops_dotNet/build
 fprintf('\n');
 display_system_info();
 runNotes = '';
-if ~doDryRun
+if ~doWarmupRun
     runNotes = [runNotes ' NO WARM-UP RUN'];
 end
 fprintf('nIters = %d %s\n\n', nIters, runNotes);
@@ -39,7 +39,7 @@ if ispc
 end
 
 % Warm-up pass
-if doDryRun
+if doWarmupRun
     bench_nops_pass(10000, 1);
 end
 
@@ -197,7 +197,7 @@ name = 'eval(''nop'')';
 fcnName = 'nop()';
 t0 = tic;
 for i = 1:nIters
-    eval(fcnName);
+    eval(fcnName); %#ok<EVLCS> 
 end
 te = toc(t0);
 clear fcnName;
