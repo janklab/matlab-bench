@@ -132,6 +132,15 @@ end
 te = toc(t0);
 show_result(name, nIters, te, isDryRun);
 
+name = 'classdef obj.static_nop()';
+dummyobj = dummymcos;
+t0 = tic;
+for i = 1:nIters
+    dummyobj.static_nop();
+end
+te = toc(t0);
+show_result(name, nIters, te, isDryRun);
+
 name = 'classdef constant';
 t0 = tic;
 for i = 1:nIters
