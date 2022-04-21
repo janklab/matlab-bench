@@ -4,7 +4,7 @@ This is a small collection of utilities for exploring and learning about the beh
 
 Each of the tools is in its own subdirectory from which it can be run.
 
-This is the benchmark used in [the "is Matlab OOP slow?" Stack Overflow answer](https://stackoverflow.com/questions/1693429/is-matlab-oop-slow-or-am-i-doing-something-wrong#:~:text=The%20short%20answer%20is%3A%20yes,you%20can%20).
+This is the benchmark used in [the "Is Matlab OOP slow?" Stack Overflow answer](https://stackoverflow.com/questions/1693429/is-matlab-oop-slow-or-am-i-doing-something-wrong#:~:text=The%20short%20answer%20is%3A%20yes,you%20can%20).
 
 ## Caveats
 
@@ -38,3 +38,5 @@ bench_matlab_nops
 Andrew Janke <janke@pobox.com>, <https://apjanke.net>.
 
 This is an independent project. It is not affiliated with The MathWorks, creators of Matlab.
+
+This project is part of the [Janklab](https://janklab.net/) suite of open-source libraries for Matlab.
