@@ -8,7 +8,7 @@ This is the benchmark used in [the "Is Matlab OOP slow?" Stack Overflow answer](
 
 ## Caveats
 
-The results of these tools are inherently system-dependent. Be careful about extrapolating what you learn from them.
+The results of these tools are inherently system-dependent, on both your machine configuration and especially the computer hardware you're running. Be careful about extrapolating what you learn from them.
 
 These tools are not intended for use in production code. The code in this project is not suitable for reuse. It does not define any stable or public APIs.
 
@@ -29,13 +29,15 @@ bench_matlab_nops
 
 ## Tools
 
-* `bench_matlab_ops` – Benchmarks the overhead of function calls and basic OO operations.
-* `bench_matlab_ops/compareStringAndCharOps` – Compare speed of equivalent operations on char and string arrays.
+* `bench_matlab_nops` – Benchmarks the overhead of function calls and basic OO operations.
+* `compareStringAndCharOps` – Compare speed of equivalent operations on char and string arrays.
 * `java_lib_versions` – Detects the versions of Java libraries that Matlab ships with (work in progress).
+
+(All found in the `bench_matlab_ops/` folder.)
 
 ## Author
 
-Andrew Janke <janke@pobox.com>, <https://apjanke.net>.
+Andrew Janke: <janke@pobox.com>, <https://apjanke.net>.
 
 This is an independent project. It is not affiliated with The MathWorks, creators of Matlab.
 
