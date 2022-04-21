@@ -118,7 +118,7 @@ end
 te = toc(t0);
 show_result(name, nIters, te, isDryRun);
 
-name = 'classdef pivate_nop(obj)';
+name = 'classdef private_nop(obj)';
 t0 = tic;
 obj.call_private_nop(nIters);
 te = toc(t0);
