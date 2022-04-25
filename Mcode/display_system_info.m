@@ -15,7 +15,7 @@ systemExtra = '';
 out = struct;
 
 switch computer
-    case {'MACI64'}
+    case {'MACI64','MACA64'}
         cpuModel = sysctl_prop('machdep.cpu.brand_string');
         nCpuCores = str2double(sysctl_prop('machdep.cpu.core_count'));
         %cpuCacheSize = str2double(sysctl_prop('hw.l3cachesize')) / (2^20);
