@@ -1,4 +1,7 @@
-# .gitignore for Matlab projects
+# .gitignore for matlab-bench
+#
+# This is based on my generic Matlab projects gitignore, but customized for
+# matlab-bench.
 
 # Note that the various binary MEX file formats are NOT included in this .gitignore.
 # That is because, unlike with most programming languages, the built binary MEX files

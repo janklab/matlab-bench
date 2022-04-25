@@ -10,7 +10,7 @@ function bench_matlab_nops(doWarmupRun, nIters)
 if nargin < 1 || isempty(doWarmupRun);  doWarmupRun = true;  end
 if nargin < 2 || isempty(nIters);    nIters = 100000;  end
 
-myJavaClassDir = fileparts(mfilename('fullpath'));
+myParentDir = fileparts(mfilename('fullpath'));
 
 myDotNetDir = [fileparts(mfilename('fullpath')) '/dotNet/bench_nops_dotNet/build/'];
 
@@ -26,10 +26,11 @@ fprintf('nIters = %d %s\n\n', nIters, runNotes);
 
 % Prep
 
-% HACK: Get our Java classes on the path
+% Get our Java classes on the path
 % Be sloppy and skip the try/catch or onCleanup() just in case that affects
-% our timings
-javaaddpath(myJavaClassDir);
+% our timings.
+myJavaJarFile = fullfile(myParentDir, 'java', 'matlab-bench-internals.jar');
+javaaddpath(myJavaJarFile);
 
 if ispc
     % Load .net assemblies
@@ -47,7 +48,7 @@ end
 bench_nops_pass(nIters, 0);
 
 % Cleanup
-javarmpath(myJavaClassDir);
+javarmpath(myJavaJarFile);
 
 % .NET dlls can't be unloaded; if needed please restart Matlab.
 
