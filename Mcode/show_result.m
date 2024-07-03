@@ -6,6 +6,6 @@ if isDryRun
 end
 usecPerOp = (te * 10^6) / nIters;
 %fprintf('%-30s  %6.3f  %6.3f \n', [name ':'], te, usecPerOp);
-fprintf('%-30s  %12.3f \n', [name ':'], usecPerOp);
+fprintf('%-30s  %12.2f \n', [name ':'], usecPerOp);
 
 end
